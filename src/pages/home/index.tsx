@@ -4,8 +4,6 @@ import { Separator } from '@/components/ui/separator';
 import { projects } from '@/lib/const';
 import React from 'react';
 
-
-
 const Homepage = () => {
   return (
     <div className='bg-black min-h-screen p-8'>
