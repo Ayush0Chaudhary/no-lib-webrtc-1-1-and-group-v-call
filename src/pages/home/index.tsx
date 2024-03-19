@@ -2,7 +2,6 @@ import Navbar from '@/components/nav';
 import { HoverEffect } from '@/components/ui/hover-card';
 import { Separator } from '@/components/ui/separator';
 import { projects } from '@/lib/const';
-import React from 'react';
 
 const Homepage = () => {
   return (
