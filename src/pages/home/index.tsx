@@ -9,7 +9,8 @@ const Homepage = () => {
       <div className='container mx-auto'>
         <Navbar />
         <Separator />
-        <div className='max-w-5xl mx-auto px-8'>
+        <div className='max-w-full mx-auto px-8'>
+          {/* Adjusted max-w-full to make content expand to the maximum width */}
           <HoverEffect items={projects} />
         </div>
       </div>
