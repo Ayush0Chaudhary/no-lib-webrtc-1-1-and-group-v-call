@@ -3,7 +3,7 @@ export const projects = [
     title: 'PureNet',
     description:
       'Make your phones distraction free Elevate your JEE Prep. We remove 98% distractions from your phone.',
-    link: 'https://edil.site',
+    link: 'https://purenet.alpexlab.com',
   },
   {
     title: 'Automated Email Sender',
