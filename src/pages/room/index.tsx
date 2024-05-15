@@ -1,4 +1,4 @@
-import { log } from 'console';
+// implement Signalling state checks
 import { useRef, useState } from 'react';
 import io from 'socket.io-client';
 
@@ -37,25 +37,31 @@ const RoomCallPage = () => {
     socket.emit('join-room', meetingLink);
     socket.on('room-participants', async (participants) => {
       const parsedJson = JSON.parse(participants);
+      // console.log(participants);
+      //remove my id from parsedJson.userIds
+      parsedJson.userIds = parsedJson.userIds.filter((id: string) => id !== socket.id);
       for (let i = 0; i < parsedJson.userIds.length; i++) {
         if (!users.includes(parsedJson.userIds[i]) && parsedJson.userIds[i] !== socket.id) {
           console.log(parsedJson.userIds[i], '##################');
           setUsersInMeet([...usersInMeet, parsedJson.userIds[i]]);
           const pc = new RTCPeerConnection(peerConfiguration);
-
+          users.push(parsedJson.userIds[i]);
           pc.ontrack = (event) => {
-            console.log('ontrackkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk');
+            console.log(event);
+            
+            console.log((i+1),'ontrackkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk');
             console.log(pc, 'here', Date.now());
             console.log(users);
             const remoteStream = new MediaStream();
             remoteStream.addTrack(event.track);
-            if (users.length === 1) {
+            if ((i+1) === 1) {
+              
               remoteVideoRefs1.current.srcObject = remoteStream;
-            } else if (users.length === 2) {
+            } else if ((i+1) === 2) {
               remoteVideoRefs2.current.srcObject = remoteStream;
-            } else if (users.length === 3) {
+            } else if ((i+1) === 3) {
               remoteVideoRefs3.current.srcObject = remoteStream;
-            } else if (users.length === 4) {
+            } else if ((i+1) === 4) {
               remoteVideoRefs4.current.srcObject = remoteStream;
             }
           };
@@ -89,21 +95,88 @@ const RoomCallPage = () => {
               socket.on('ice-candidate', async (candidate) => {
                 const parsedCandidate = JSON.parse(candidate);
                 await pc.addIceCandidate(parsedCandidate.candidate);
+                console.log('********Remote ICE CANDIDATE********', Date.now());
               });
             });
           });
-          socket.on('ice-candidate', async (candidate) => {
-            const parsedCandidate = JSON.parse(candidate);
-
-            console.log('********Remote ICE CANDIDATE********', Date.now());
-            await pc.addIceCandidate(parsedCandidate.candidate);
-          });
           console.log(pc.connectionState, '%%%%%%%%%%%%%%%');
 
-          if (pc.connectionState === 'new') {
-            users.push(parsedJson.userIds[i]);
-          }
+          // if (pc.connectionState === 'new') {
+          //   users.push(parsedJson.userIds[i]);
+          // }
         }
+      }
+    });
+
+    socket.on('offer', async (data) => {
+      const parsedJSON = JSON.parse(data);
+      console.log(parsedJSON, 'parsedJson Offer');
+      users.push(parsedJSON.from);
+
+      const pc = new RTCPeerConnection(peerConfiguration);
+      pc.onicecandidate = (event) => {
+        if (event.candidate) {
+          socket.emit(
+            'ice-candidate',
+            JSON.stringify({ candidate: event.candidate, to: parsedJSON.from })
+          );
+        }
+      };
+      pc.ontrack = (event) => {
+        console.log('ontrack', new Date().getTime(), event,event.track);
+        console.log(users);
+
+        const remoteStream = new MediaStream();
+        remoteStream.addTrack(event.track);
+        console.log(users.length);
+        
+        if (users.length === 1) {
+          console.log('DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDdd');
+
+          remoteVideoRefs1.current.srcObject = remoteStream;
+        } else if (users.length === 2) {
+          remoteVideoRefs2.current.srcObject = remoteStream;
+        } else if (users.length === 3) {
+          remoteVideoRefs3.current.srcObject = remoteStream;
+        } else if (users.length === 4) {
+          remoteVideoRefs4.current.srcObject = remoteStream;
+        }
+      };
+      // pc.onicecandidate = handleICECandidateEvent;
+      // pc.ontrack = handleTrackEvent
+      // pc.onnegotiationneeded = handleNegotiationNeededEvent;
+      // // pc.onremovetrack = handleRemoveTrackEvent;
+      // pc.oniceconnectionstatechange = handleICEConnectionStateChangeEvent;
+      // pc.onicegatheringstatechange = handleICEGatheringStateChangeEvent;
+      // pc.onsignalingstatechange = handleSignalingStateChangeEvent;
+
+      myStream.getTracks().forEach((track) => pc.addTrack(track, myStream));
+
+      await pc.setRemoteDescription(parsedJSON.offer).then(() => {
+        console.log(Date.now(), '*********Remote Description Set*********', pc);
+        pcMap.set(parsedJSON.from, pc);
+      });
+      const answer = await pc.createAnswer();
+      pc.setLocalDescription(answer);
+      socket.emit('answer', JSON.stringify({ answer: answer, to: parsedJSON.from }));
+    });
+
+
+    socket.on('ice-candidate', async (data) => {
+      const parsedJSON = JSON.parse(data);
+      const pc = pcMap.get(parsedJSON.from);
+      console.log('***********ICE CANDIDATE***********', parsedJSON.candidate, Date.now());
+      if (pc?.iceConnectionState) {
+        await pc.addIceCandidate(parsedJSON.candidate);
+
+        // pc.onsignalingstatechange = (event) => {
+        //   console.log('Signaling State:', pc.signalingState);
+        // }
+        // if (pc.signalingState === 'stable') {
+
+        // }
+      } else {
+        console.log('Just recieved unknow icec');
       }
     });
     // makePCWithNewUser();
@@ -119,15 +192,54 @@ const RoomCallPage = () => {
     socket.on('offer', async (data) => {
       const parsedJSON = JSON.parse(data);
       console.log(parsedJSON, 'parsedJson Offer');
+      users.push(parsedJSON.from);
 
       const pc = new RTCPeerConnection(peerConfiguration);
-      
+      pc.onicecandidate = (event) => {
+        if (event.candidate) {
+          socket.emit(
+            'ice-candidate',
+            JSON.stringify({ candidate: event.candidate, to: parsedJSON.from })
+          );
+        }
+      };
+      pc.ontrack = (event) => {
+        console.log('ontrack', new Date().getTime(), event,event.track);
+        console.log(users);
+
+        const remoteStream = new MediaStream();
+        remoteStream.addTrack(event.track);
+        console.log(users.length);
+        
+        if (users.length === 1) {
+          console.log('DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDdd');
+
+          remoteVideoRefs1.current.srcObject = remoteStream;
+        } else if (users.length === 2) {
+          remoteVideoRefs2.current.srcObject = remoteStream;
+        } else if (users.length === 3) {
+          remoteVideoRefs3.current.srcObject = remoteStream;
+        } else if (users.length === 4) {
+          remoteVideoRefs4.current.srcObject = remoteStream;
+        }
+      };
+      // pc.onicecandidate = handleICECandidateEvent;
+      // pc.ontrack = handleTrackEvent
+      // pc.onnegotiationneeded = handleNegotiationNeededEvent;
+      // // pc.onremovetrack = handleRemoveTrackEvent;
+      // pc.oniceconnectionstatechange = handleICEConnectionStateChangeEvent;
+      // pc.onicegatheringstatechange = handleICEGatheringStateChangeEvent;
+      // pc.onsignalingstatechange = handleSignalingStateChangeEvent;
+
       myStream.getTracks().forEach((track) => pc.addTrack(track, myStream));
 
       await pc.setRemoteDescription(parsedJSON.offer).then(() => {
         console.log(Date.now(), '*********Remote Description Set*********', pc);
         pcMap.set(parsedJSON.from, pc);
       });
+      const answer = await pc.createAnswer();
+      pc.setLocalDescription(answer);
+      socket.emit('answer', JSON.stringify({ answer: answer, to: parsedJSON.from }));
     });
 
     socket.on('ice-candidate', async (data) => {
@@ -136,49 +248,16 @@ const RoomCallPage = () => {
       console.log('***********ICE CANDIDATE***********', parsedJSON.candidate, Date.now());
       if (pc?.iceConnectionState) {
         await pc.addIceCandidate(parsedJSON.candidate);
-        console.log(pc, "^^");
 
         // pc.onsignalingstatechange = (event) => {
         //   console.log('Signaling State:', pc.signalingState);
         // }
-        const answer = await pc.createAnswer();
-        pc.setLocalDescription(answer);
-        socket.emit('answer', JSON.stringify({ answer: answer, to: parsedJSON.from }));
-        pc.onicecandidate = (event) => {
-          if (event.candidate) {
-            socket.emit(
-              'ice-candidate',
-              JSON.stringify({ candidate: event.candidate, to: parsedJSON.from })
-            );
-          }
-        };
+        // if (pc.signalingState === 'stable') {
 
-      if(pc.connectionState === 'new') {
-        users.push(parsedJSON.from);
-      }
-
-      pc.ontrack = (event) => {
-        console.log('ontrack');
-        console.log(users);
-
-        const remoteStream = new MediaStream();
-        remoteStream.addTrack(event.track);
-        if(users.length === 1) {
-          remoteVideoRefs1.current.srcObject = remoteStream;
-        }else if(users.length === 2) {
-          remoteVideoRefs2.current.srcObject = remoteStream;
-        }else if(users.length === 3) {
-          remoteVideoRefs3.current.srcObject = remoteStream;
-        }else if(users.length === 4) {
-          remoteVideoRefs4.current.srcObject = remoteStream;
-        }
-      };
-
-
+        // }
       } else {
         console.log('Just recieved unknow icec');
       }
-
     });
   };
 
