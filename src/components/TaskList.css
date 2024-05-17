@@ -1,0 +1,72 @@
+.task-list-container {
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    margin-top:8vh;
+    .heading{
+        font-size: 2.5rem;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+  }
+  
+  .task-toggle {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+    gap:10px;
+  }
+  
+  .task-toggle-option {
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #eaeaea;
+    transition: background-color 0.3s ease;
+    width:400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .task-toggle-option.active {
+    background-color: #ccc;
+  }
+  
+  .task-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .task-item {
+    margin-bottom: 15px;
+    border-bottom: 0.5px solid #ccc;
+  }
+  
+  .task-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    width:600px;
+    cursor: pointer;
+  }
+  
+  .task-header h3 {
+    margin: 0;
+  }
+  
+  .dropdown-arrow {
+    font-size: 1.5rem;
+  }
+  
+  .task-details {
+    padding: 10px;
+    display: none;
+  }
+  
+  .task-details.active {
+    display: block;
+  }
+  

@@ -1,0 +1,50 @@
+.totalflyawaycont{
+    display: flex;
+    gap:15vw;
+    border: 0.5px solid #ccc;
+    .mainflyawaycont{
+        .all-vid{
+
+            border: 1px solid #ccc;
+            border-radius: 10px; 
+            min-width:30vw;
+            min-height:30vh;
+
+            .vid-1-2{
+                display: flex;
+                flex-direction: row;
+                border-radius: 10px; 
+            }
+            .vid-3-4{
+                display: flex;
+                flex-direction: row;
+                border-radius: 10px; 
+            }
+        }
+
+        .vids{
+            border-radius: 10px; 
+        }
+
+        .Tasks-Panel{
+            display: flex;
+            flex-direction: row;
+        }
+
+        .task-panel-heading{
+            border: 0.5px solid #ccc;
+            min-width: 30vw;
+            padding:1rem;
+            p{
+                font-size:2rem;
+                margin-bottom: 1vh;
+            }
+        }
+    }
+    .task-list{
+        display: flex;
+        align-items: center;
+        justify-content: start;
+        flex-direction: column;
+    }
+}

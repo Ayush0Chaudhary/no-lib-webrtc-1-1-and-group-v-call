@@ -194,7 +194,7 @@ const RoomCallPage = () => {
     <>
       <Navbar />
       <Separator />
-      <div className='bg-black text-white min-h-screen flex justify-center items-center'>
+      <div className='bg-white text-black min-h-screen flex justify-start items-center ml-10'>
         <div className='max-w-lg'>
           <h1 className='text-3xl mb-6 text-center'>Your Feed || Remote Feed</h1>
           <div className='relative w-full h-96 flex'>
@@ -245,7 +245,7 @@ const RoomCallPage = () => {
               type='text'
               value={socketIOID}
               onChange={(e) => setsocketIOID(e.target.value)}
-              className='mt-1 p-2 w-full rounded border border-gray-600 bg-gray-800 text-white'
+              className='mt-1 p-2 w-full rounded border border-gray-600 bg-white text-black' 
             />
           </div>
         </div>
