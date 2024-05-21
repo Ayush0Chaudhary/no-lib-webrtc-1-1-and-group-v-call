@@ -33,6 +33,10 @@ const RoomCallPage = () => {
   const [src3, setsrc3] = useState('');
   const users: string[] = [];
   const pcMap = new Map<string, RTCPeerConnection>();
+  const [mediaRecorder, setMediaRecorder] = useState(null);
+  const [recordedChunks, setRecordedChunks] = useState([]);
+  const [isRecording, setIsRecording] = useState(false);
+  const [downloadLink, setDownloadLink] = useState('');
   // const [myStream, setMyStream] = useState<MediaStream>();
 
   // useEffect(() => {
@@ -83,8 +87,8 @@ const RoomCallPage = () => {
     if (videos.length === 0) return;
   
     // Calculate the width and height for each grid cell
-    const cellWidth = videos[0].videoWidth;
-    const cellHeight = videos[0].videoHeight;
+    let cellWidth = videos[0].videoWidth/Math.max(numCols,numRows);
+    let cellHeight = videos[0].videoHeight/Math.max(numCols,numRows);
   
     // Set the canvas size to accommodate the grid
     canvas.width = cellWidth * numCols;
@@ -94,7 +98,7 @@ const RoomCallPage = () => {
     videos.forEach((video, index) => {
       // console.log(video);
       const row = Math.floor(index / numCols);
-      const col = index % numCols;
+      const col = index % numCols; 
       const x = col * cellWidth;
       const y = row * cellHeight;
   
@@ -119,7 +123,7 @@ const RoomCallPage = () => {
   
     socket.on('offer', async (data) => {
       const parsedJSON = JSON.parse(data);
-      console.log(parsedJSON, 'parsedJson Offer');
+      // console.log(parsedJSON, 'parsedJson Offer');
       users.push(parsedJSON.from);
   
       const pc = new RTCPeerConnection(peerConfiguration);
@@ -132,26 +136,19 @@ const RoomCallPage = () => {
         }
       };
       pc.ontrack = (event) => {
-        console.log('ontrack', new Date().getTime(), event, event.track);
-        console.log(users);
+        // console.log('ontrack', new Date().getTime(), event, event.track);
+        // console.log(users);
   
         const remoteStream = new MediaStream();
         remoteStream.addTrack(event.track);
-        console.log(users.length);
+        // console.log(users.length);
         setUsersInMeet(users);
-        console.log(users, "dddddddddddddddddddddddddd");
+        // console.log(users, "dddddddddddddddddddddddddd");
   
         if (users.length === 1) {
-          console.log('DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDdd');
           remoteVideoRefs1.current.srcObject = remoteStream;
-          videoRef.current.className = `w-1/2 h object-cover flex-1 vids`;
-          remoteVideoRefs1.current.className = `w-1/2 h object-cover flex-1 vids`; 
         } else if (users.length === 2) {
           remoteVideoRefs2.current.srcObject = remoteStream;
-          videoRef.current.className = `w-1/2 h-1/2 object-cover flex-1 vids`;
-          remoteVideoRefs1.current.className = `w-1/2 h-1/2 object-cover flex-1 vids`;
-          remoteVideoRefs2.current.className = `w-1/2 h-1/2 object-cover flex-1 vids`; 
-          remoteVideoRefs3.current.className = `w-1/2 h-1/2 object-cover flex-1 vids`; 
           
         } else if (users.length === 3) {
           remoteVideoRefs3.current.srcObject = remoteStream;
@@ -204,38 +201,19 @@ const RoomCallPage = () => {
           const pc = new RTCPeerConnection(peerConfiguration);
           users.push(parsedJson.userIds[i]);
           pc.ontrack = (event) => {
-            console.log(event);
-            
-            console.log((i+1),'ontrackkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk');
-            console.log(pc, 'here', Date.now());
-            console.log(users);
+            // console.log(event);
+            // console.log((i+1),'ontrackkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk');
+            // console.log(pc, 'here', Date.now());
+            // console.log(users);
             const remoteStream = new MediaStream();
             remoteStream.addTrack(event.track);
             if ((i+1) === 1) {
-              
-              console.log('DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDdd');
-              
               remoteVideoRefs1.current.srcObject = remoteStream;
-              
-                remoteVideoRefs1.current.play();
-                // setShouldDraw(false); // Stop the current drawing loop
-                // setTimeout(() => {
-                //   console.log('start here1');
-                //   setShouldDraw(true); 
-                //   requestAnimationFrame(() => drawToCanvas(['video1','video2'])); // Start a new drawing loop with new video sources
-                // }, 100); 
-              
-              // console.log('hello');
-              videoRef.current.className = `w-1/2 h object-cover flex-1 vids`;
-              remoteVideoRefs1.current.className = `w-1/2 h object-cover flex-1 vids`; 
+              remoteVideoRefs1.current.play();
 
             } else if ((i+1) === 2) {
               remoteVideoRefs2.current.srcObject = remoteStream;
               remoteVideoRefs2.current.play();
-              videoRef.current.className = `w-1/2 h-1/2 object-cover flex-1 vids`;
-              remoteVideoRefs1.current.className = `w-1/2 h-1/2 object-cover flex-1 vids`;
-              remoteVideoRefs2.current.className = `w-1/2 h-1/2 object-cover flex-1 vids`; 
-              remoteVideoRefs3.current.className = `w-1/2 h-1/2 object-cover flex-1 vids`; 
                 
             } else if ((i+1) === 3) {
               remoteVideoRefs3.current.srcObject = remoteStream;
@@ -389,6 +367,34 @@ const RoomCallPage = () => {
   };
 
 
+  const startRecording = () => {
+    const canvas = canvasRef.current;
+    const stream = canvas.captureStream(30); // 30 fps
+    const recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+
+    recorder.ondataavailable = (event) => {
+      if (event.data.size > 0) {
+        setRecordedChunks((prev) => [...prev, event.data]); 
+      }
+    };
+
+    recorder.onstop = () => {
+      const blob = new Blob(recordedChunks, { type: 'video/webm' });
+      const url = URL.createObjectURL(blob);
+      setDownloadLink(url);
+    };
+
+    recorder.start();
+    setMediaRecorder(recorder);
+    setIsRecording(true);
+  };
+
+  const stopRecording = () => {
+    mediaRecorder.stop();
+    setIsRecording(false);
+  };
+
+
 
   return frontendEnabled  ? (
     <>
@@ -472,6 +478,11 @@ const RoomCallPage = () => {
           </button>
           </div>
           </div>
+          <div>
+        <button onClick={startRecording} disabled={isRecording}>Start Recording</button>
+        <button onClick={stopRecording} disabled={!isRecording}>Stop Recording</button>
+        {downloadLink && <a href={downloadLink} download="canvasRecording.webm">Download</a>}
+      </div>
         </div>
         </div>
         <div className="task-list">
