@@ -201,14 +201,18 @@ const TaskList = () => {
         taskData
           .filter((t) => t._id === expandedTask)
           .map((task) => (
-            <><div className='task-header' onClick={() => handleToggleDetails(task._id)}>
-              <h3>{task.title}</h3>
-              <div className='dropdown-arrow'>
-                <IoIosArrowUp fontSize='15px' />
+            <>
+              <div className='task-header' onClick={() => handleToggleDetails(task._id)}>
+                <h3>{task.title}</h3>
+                <div className='dropdown-arrow'>
+                  <IoIosArrowUp fontSize='15px' />
+                </div>
               </div>
-            </div><div className={`task-details active`}>
+              <div className={`task-details active`}>
                 <p>{task.description}</p>
-              </div></>
+              </div>
+              {/* Add you component here! */}
+            </>
           ))
       )}
     </div>
