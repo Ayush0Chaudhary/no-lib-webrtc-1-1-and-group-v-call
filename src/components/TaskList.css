@@ -52,6 +52,17 @@
     width:600px;
     cursor: pointer;
   }
+
+  .task-header-unexpanded {
+    display: flex;
+    /* justify-content: space-between; */
+    gap:10px;
+    align-items: center;
+    padding: 10px;
+    width:600px;
+    cursor: pointer;
+  }
+  
   
   .task-header h3 {
     margin: 0;
@@ -68,5 +79,61 @@
   
   .task-details.active {
     display: block;
+  }
+
+  .option-selector {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 15vw;
+    height: 50px;
+    font-size: 1.1rem;
+    padding-left: 1.2rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-radius: 10px;
+    appearance: none; /* Remove default arrow */
+    -webkit-appearance: none; /* Remove default arrow in WebKit browsers */
+    -moz-appearance: none; /* Remove default arrow in Firefox */
+    background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDE2IDE2Ij4KICAgIDxwYXRoIGQ9Ik04IDEyLjc1TDAuODggNS42MSAxLjUzIDQuOTYgOCAxMS40MiAxNC40NyA0Ljk2bC42NS42NS03LjE1IDcuMTN6Ii8+Cjwvc3ZnPgo=') no-repeat right 1rem center; /* Custom arrow */
+    background-size: 12px; /* Adjust the size of the custom arrow */
+    background-color: #fff; /* Background color */
+    border: 1px solid #dfdfdf;
+    margin-right: 2rem;
+    padding-right: 1rem; /* Add padding to the right */
+    /* padding: 0.5rem; */
+  }
+  
+  /* Ensure padding and margin for the container */
+  .select-container {
+    position: relative;
+    display: inline-block;
+    margin-right: 2rem; /* Add margin to the right of the container */
+    p{
+      margin-bottom: 5px;
+      font-size: 0.9rem;
+      color: #7e7e7e;
+      font-weight: 600;
+    }
+  }
+  
+  .notes{
+    height: 50px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+  }
+
+  .notes::placeholder{
+    font-size: 1rem;
+    padding-left: 1rem;
+  }
+
+  .notes-container{
+    p{
+      margin-bottom: 5px;
+      font-size: 0.9rem;
+      color: #7e7e7e;
+      font-weight: 600;
+    }
   }
   

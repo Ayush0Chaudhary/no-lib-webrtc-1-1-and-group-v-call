@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './TaskList.css'; // Import CSS file for styling
 import { MdArrowForwardIos } from 'react-icons/md';
-import { IoIosArrowUp } from 'react-icons/io';
+import { IoIosArrowUp, IoIosArrowBack } from 'react-icons/io';
 import { basicAxios } from '@/services/basicAxios';
 import API_ENDPOINTS from '@/services/apiEndpoints';
 import { Task } from '@/types';
@@ -9,6 +9,11 @@ import { Task } from '@/types';
 const TaskList = () => {
   const [selectedOption, setSelectedOption] = useState('todo');
   const [taskData, setTaskData] = useState<Task[]>([]);
+  const [selectedOption1, setSelectedOption1] = useState('');
+  const [selectedOption2, setSelectedOption2] = useState('');
+  const [inputValue1, setInputValue1] = useState('');
+  const [inputValue2, setInputValue2] = useState('');
+  const [additionalInput, setAdditionalInput] = useState('');
 
   const handleOptionChange = (option) => {
     setSelectedOption(option);
@@ -18,6 +23,20 @@ const TaskList = () => {
 
   const handleToggleDetails = (taskId) => {
     setExpandedTask(expandedTask === taskId ? null : taskId);
+  };
+
+    const handleSelectChange1 = (event) => {
+    setSelectedOption1(event.target.value);
+    if (event.target.value !== 'Other') {
+      setInputValue1('');
+    }
+  };
+
+  const handleSelectChange2 = (event) => {
+    setSelectedOption2(event.target.value);
+    if (event.target.value !== 'Other') {
+      setInputValue2('');
+    }
   };
 
   // const taskData = [
@@ -145,17 +164,27 @@ const TaskList = () => {
 
   useEffect(() => {
     // Fetch task data from API
-    const getTaskData = async () => {
-      try {
-        const res = await basicAxios(API_ENDPOINTS.GET_PROJECT_TASK + '/samosa');
-        const data = res.data;
-        console.log('Task data:', data, 'res', res);
-        setTaskData(data);
-      } catch (error) {
-        console.error('Error fetching task data:', error);
-      }
-    };
-    getTaskData();
+    // const getTaskData = async () => {
+    //   try {
+    //     const res = await basicAxios(API_ENDPOINTS.GET_PROJECT_TASK + '/samosa');
+    //     const data = res.data;
+    //     console.log('Task data:', data, 'res', res);
+    //     setTaskData(data);
+    //   } catch (error) {
+    //     console.error('Error fetching task data:', error);
+    //   }
+    // };
+    // getTaskData();
+    const Task = {
+      _id: 1,
+      title: "TASK TITLE",
+      description: "TASK DESCRIPTION",
+      details: "details1",
+      result: "results1",
+      classification: "classification1",
+      notes: "nottesss1"
+    }
+    setTaskData([Task]);
   }, []);
 
   // const filteredTasks = taskData.filter(task => task.status === selectedOption);
@@ -177,7 +206,8 @@ const TaskList = () => {
           Completed
         </div>
       </div>
-      {expandedTask === null ? (
+      
+      { expandedTask === null ? (
         <div className='task-list'>
           {taskData.map((task) => (
             <div key={task._id} className='task-item'>
@@ -202,16 +232,47 @@ const TaskList = () => {
           .filter((t) => t._id === expandedTask)
           .map((task) => (
             <>
-              <div className='task-header' onClick={() => handleToggleDetails(task._id)}>
-                <h3>{task.title}</h3>
+              <div className='task-header-unexpanded' onClick={() => handleToggleDetails(task._id)}>
                 <div className='dropdown-arrow'>
-                  <IoIosArrowUp fontSize='15px' />
+                  <IoIosArrowBack fontSize='15px' />
                 </div>
+                <h3>{task.title}</h3>
               </div>
               <div className={`task-details active`}>
                 <p>{task.description}</p>
               </div>
-              {/* Add you component here! */}
+              {/* Add you component here! */} 
+              <hr />
+              <div style={{ padding: '20px' }}>
+      <div style={{ display: 'flex' ,justifyContent: 'space-between'}}>
+        <div className='select-container'>
+            <p>Result</p>
+            <select value={selectedOption1} onChange={handleSelectChange1} className='option-selector'>
+              <option value="Option1">Pass</option>
+              <option value="Option2">Fail</option>
+              <option value="Other">Other</option>
+            </select>
+        </div>
+        <div className='select-container'>
+            <p>Classification?</p>
+            <select value={selectedOption2} onChange={handleSelectChange2} className='option-selector'>
+              <option value="Option1">Bug</option>
+              <option value="Option2">Insight</option>
+              <option value="Other">Other</option>
+            </select>
+        </div>
+      </div>
+      <div style={{ marginTop: '20px' }} className='notes-container'>
+        <p>Notes</p>
+        <input
+          value={additionalInput}
+          onChange={(e) => setAdditionalInput(e.target.value)}
+          placeholder="Capture your notes here..."
+          style={{ width: '100%' }}
+          className='notes'
+        />
+      </div>
+    </div>
             </>
           ))
       )}
