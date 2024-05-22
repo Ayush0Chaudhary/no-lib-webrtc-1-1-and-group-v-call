@@ -26,6 +26,8 @@ const RoomCallPage = () => {
   const remoteVideoRefs3 = useRef(null);
   const remoteVideoRefs4 = useRef(null);
   const canvasRef = useRef(null);
+  const data:Blob[] = [];
+  let recordee: MediaRecorder;
 
   const [frontendEnabled, setFrontedEnabled] = useState(true);
   const [src1, setsrc1] = useState('');
@@ -54,7 +56,7 @@ const RoomCallPage = () => {
   const [shouldDraw,setShouldDraw] = useState(true);
   
   const drawToCanvas = (videoIds) => {
-    console.log(remoteVideoRefs1.srcPbject==null);
+    // console.log(remoteVideoRefs1.srcPbject==null);
     if (!shouldDraw) return;
     const canvas = document.getElementById('canvas');
     if (!canvas) return;
@@ -82,7 +84,7 @@ const RoomCallPage = () => {
     }
     // Get the video elements
     const videos = videoIds.map(id => document.getElementById(id)).filter(video => video);
-  console.log(videoIds);
+  // console.log(videoIds);
     // If no valid video elements are found, return
     if (videos.length === 0) return;
   
@@ -371,15 +373,17 @@ const RoomCallPage = () => {
     const canvas = canvasRef.current;
     const stream = canvas.captureStream(30); // 30 fps
     const recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
-
+    recordee = recorder;
     recorder.ondataavailable = (event) => {
       if (event.data.size > 0) {
         setRecordedChunks((prev) => [...prev, event.data]); 
+        data.push(event.data);
       }
     };
 
     recorder.onstop = () => {
-      const blob = new Blob(recordedChunks, { type: 'video/webm' });
+      const blob = new Blob(data, { type: 'video/webm' });
+      data.length = 0;
       const url = URL.createObjectURL(blob);
       setDownloadLink(url);
     };
@@ -390,6 +394,9 @@ const RoomCallPage = () => {
   };
 
   const stopRecording = () => {
+    const canvas = canvasRef.current;
+    const stream = canvas.captureStream(30);
+    stream.getTracks().forEach((track) => track.stop());
     mediaRecorder.stop();
     setIsRecording(false);
   };
