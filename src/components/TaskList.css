@@ -107,6 +107,7 @@
   /* Ensure padding and margin for the container */
   .select-container {
     position: relative;
+    
     display: inline-block;
     margin-right: 2rem; /* Add margin to the right of the container */
     p{
@@ -135,5 +136,15 @@
       color: #7e7e7e;
       font-weight: 600;
     }
+  }
+
+  .rounded-button {
+    background-color: blue;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 10px;
+    border-radius: 10px;
+    cursor: pointer;
   }
   
