@@ -36,6 +36,10 @@ const TaskList = () => {
     return detailsObject;
   }
 
+  const handleCloseTask = () => {
+    setExpandedTask(null);
+  };
+
   useEffect(() => {
     // Fetch task data from API
     const getTaskData = async () => {
@@ -76,13 +80,13 @@ const TaskList = () => {
           className={`task-toggle-option ${todoActive === 'todo' && 'active'}`}
           onClick={() => handleOptionChange('todo')}
         >
-          To Do
+          <p>To Do</p>
         </div>
         <div
           className={`task-toggle-option ${todoActive === 'completed' && 'active'}`}
           onClick={() => handleOptionChange('completed')}
         >
-          Completed
+         <p>Completed</p>
         </div>
         </div>
         <div className='task-list'>
@@ -115,8 +119,8 @@ const TaskList = () => {
                   <IoIosArrowBack fontSize='15px' />
                 </div>
                 <h3 className='task-title'>{task.title}</h3>
-              </div>
-              <TaskComponent task={task}/>
+              </div> 
+              <TaskComponent task={task} closeTask={handleCloseTask}/>
             </>
           ))
       )}

@@ -5,9 +5,9 @@
     flex-direction: column;
     margin-top:8vh;
     .heading{
-        font-size: 2.5rem;
+        font-size: 2rem;
         font-weight: 600;
-        margin-bottom: 10px;
+        margin-bottom: 5px;
     }
   }
   
@@ -16,11 +16,13 @@
     justify-content: space-around;
     margin-bottom: 20px;
     gap:10px;
+    background-color: #eaeaea;
+    border-radius: 5px;
   }
   
   .task-toggle-option {
     cursor: pointer;
-    padding: 10px;
+    padding: 5px;
     border-radius: 5px;
     background-color: #eaeaea;
     transition: background-color 0.3s ease;
@@ -31,7 +33,12 @@
   }
   
   .task-toggle-option.active {
-    background-color: #ccc;
+    
+    p{
+      background-color: white;
+      padding: 3% 35%;
+      border-radius: 5px;
+    }
   }
   
   .task-list {
@@ -200,8 +207,7 @@
   }
   @media only screen and (max-height: 800px){
     .notes-container-full{
-      /* margin-top:5vh; */
       position: absolute;
-      bottom: 2vh;
+      bottom: 0vh;
     }
   }

@@ -2,15 +2,13 @@ import React, { useState } from 'react';
 import { IoIosArrowBack } from 'react-icons/io';
 import './TaskList.css';
 
-const TaskComponent = ({ task }) => {
+const TaskComponent = ({ task, closeTask }) => {
   const [expandedTask, setExpandedTask] = useState(false);
   const [result, setResult] = useState('');
   const [classification, setClassification] = useState('');
   const [note, setNotes] = useState('');
 
-  const handleToggleDetails = () => {
-    setExpandedTask(!expandedTask);
-  };
+
 
   function parseDetails(detailsString) {
     const detailsArray = detailsString.split(',');
@@ -26,24 +24,25 @@ const TaskComponent = ({ task }) => {
   }
 
   const updateTask = async () => {
-    const body = {
-      projectName: 'samosa',
-      _id: expandedTask,
-      result: result,
-      classification: classification,
-      notes: note,
-    };
-    const config = {
-      method: 'POST',
-      data: body
-    }
-    console.log(expandedTask, 'ffffffffffffffffff');
+    // const body = {
+    //   projectName: 'samosa',
+    //   _id: expandedTask,
+    //   result: result,
+    //   classification: classification,
+    //   notes: note,
+    // };
+    // const config = {
+    //   method: 'POST',
+    //   data: body
+    // }
+    // console.log(expandedTask, 'ffffffffffffffffff');
     
-    const res = await basicAxios(API_ENDPOINTS.UPDATE_TASK, config);
-    console.log(res);
-    setResult('');
+    // const res = await basicAxios(API_ENDPOINTS.UPDATE_TASK, config);
+    // console.log(res);
+    setResult('completed');
     setClassification('');
-    setNotes('');
+    setNotes(''); 
+    closeTask();
   };
 
   return (
