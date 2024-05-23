@@ -198,7 +198,7 @@ const TaskList = () => {
         title: "Title",
         description: "desc cnisnciksnciknskcnksncksnck cnskcnskcnksncksnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn",
         details: "Device,Google Maps,Software Version,Android 13,Build Version,TD2A.230203.002 (95583342)",
-        result: "res",
+        result: "",
         classification: "class",
         notes: "notes"
     };
@@ -227,7 +227,9 @@ const TaskList = () => {
     setNotes('');
   };
 
-  // const filteredTasks = taskData.filter(task => task.status === TaskType);
+  const todoTasks = taskData.filter(task => task.result === null);
+  const CompletedTasks = taskData.filter(task => task.result !== null);
+  const tasksToDisplay = todoActive === 'todo' ? todoTasks : CompletedTasks;
   return (
     <div className='task-list-container'>
       <div className='heading'>Tasks</div>
@@ -248,7 +250,7 @@ const TaskList = () => {
         </div>
         </div>
         <div className='task-list'>
-          {taskData.map((task) => (
+          {tasksToDisplay.map((task) => (
             <div key={task._id} className='task-item'>
               <div className='task-header' onClick={() => handleToggleDetails(task._id)}>
                 <h3>{task.title}</h3>
@@ -298,9 +300,9 @@ const TaskList = () => {
               {/* Add you component here! */}
               <div style={{ padding: '20px' }} className='notes-container-full'>
               <hr />
-                <h1 className='font-bold text-2xl'>Note</h1>
+                <h1 className='font-bold text-3xl mb-2'>Notes</h1>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap:'3vw' }}>
                   <div className='select-container'>
                     <p>Result</p>
                     <select
@@ -332,7 +334,7 @@ const TaskList = () => {
                     value={note}
                     onChange={(e) => setNotes(e.target.value)}
                     placeholder='Capture your notes here...'
-                    style={{ width: '100%' }}
+                    style={{ width: '34vw' }}
                     className='notes'
                   />
                 </div>

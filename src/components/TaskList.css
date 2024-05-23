@@ -103,7 +103,6 @@
     background-size: 12px; /* Adjust the size of the custom arrow */
     background-color: #fff; /* Background color */
     border: 1px solid #dfdfdf;
-    margin-right: 2rem;
     padding-right: 1rem; /* Add padding to the right */
     /* padding: 0.5rem; */
   }
@@ -113,7 +112,6 @@
     position: relative;
     
     display: inline-block;
-    margin-right: 2rem; /* Add margin to the right of the container */
     p{
       margin-bottom: 5px;
       font-size: 0.9rem;
@@ -126,11 +124,11 @@
     height: 50px;
     border: 1px solid #ccc;
     border-radius: 10px;
+    padding:1rem;
   }
 
   .notes::placeholder{
     font-size: 1rem;
-    padding-left: 1rem;
   }
 
   .notes-container{
