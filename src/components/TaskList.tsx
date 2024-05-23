@@ -35,16 +35,9 @@ const TaskList = () => {
   
     return detailsObject;
   }
-
-  const handleCloseTask = () => {
-    setExpandedTask(null);
-  };
-
-  useEffect(() => {
-    // Fetch task data from API
     const getTaskData = async () => {
       try {
-        const res = await basicAxios('samosa/getTasks');
+        const res = await basicAxios(API_ENDPOINTS.GET_PROJECT_TASK + '/samosa');
         const data = res.data;
         console.log('Task data:', data, 'res', res);
         setTaskData(data);
@@ -52,27 +45,29 @@ const TaskList = () => {
         console.error('Error fetching task data:', error);
       }
     };
-    getTaskData();
-    const Task = {
-        _id: 1,
-        title: "Title",
-        description: "desc cnisnciksnciknskcnksncksnck cnskcnskcnksncksnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn",
-        details: "Device,Google Maps,Software Version,Android 13,Build Version,TD2A.230203.002 (95583342)",
-        result: "null",
-        classification: "class",
-        notes: "notes"
-    };
-    setTaskData([Task]);
-  }, []);
+  const handleCloseTask = async () => {
+    await getTaskData();
+    setExpandedTask(null);
+  };
+  useEffect(() => {
+    // Fetch task data from API
 
+    getTaskData();
+  }, [expandedTask]);
+  
+  const test = () => {
+    console.log(taskData);
+    console.log(taskData[0].result);
+  }
+  
   // const filteredTasks = taskData.filter(task => task.status === selectedOption);
 
-  const todoTasks = taskData.filter(task => task.result === 'null');
-  const CompletedTasks = taskData.filter(task => task.result !== 'null');
+  const todoTasks = taskData.filter(task => task.result === undefined);
+  const CompletedTasks = taskData.filter(task => task.result !== undefined);
   const tasksToDisplay = todoActive === 'todo' ? todoTasks : CompletedTasks;
   return (
     <div className='task-list-container'>
-      <div className='heading'>Tasks</div>
+      <div className='heading' onClick={test}>Tasks</div>
       {expandedTask === null ? (
         <div >
           <div className='task-toggle'>
@@ -90,7 +85,7 @@ const TaskList = () => {
         </div>
         </div>
         <div className='task-list'>
-          {tasksToDisplay.map((task) => (
+          {(todoActive === 'todo' ? taskData.filter((t) => t.result === undefined) : taskData.filter((t) => t.result !== undefined)).map((task) => (
             <div key={task._id} className='task-item'>
               <div className='task-header' onClick={() => handleToggleDetails(task._id)}>
                 <h3>{task.title}</h3>

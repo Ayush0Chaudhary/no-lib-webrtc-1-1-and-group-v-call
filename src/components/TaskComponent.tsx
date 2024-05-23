@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { IoIosArrowBack } from 'react-icons/io';
 import './TaskList.css';
+import { basicAxios } from '@/services/basicAxios';
+import API_ENDPOINTS from '@/services/apiEndpoints';
 
 const TaskComponent = ({ task, closeTask }) => {
   const [expandedTask, setExpandedTask] = useState(false);
@@ -24,26 +26,27 @@ const TaskComponent = ({ task, closeTask }) => {
   }
 
   const updateTask = async () => {
-    // const body = {
-    //   projectName: 'samosa',
-    //   _id: expandedTask,
-    //   result: result,
-    //   classification: classification,
-    //   notes: note,
-    // };
-    // const config = {
-    //   method: 'POST',
-    //   data: body
-    // }
-    // console.log(expandedTask, 'ffffffffffffffffff');
+    const body = {
+      projectName: 'samosa',
+      _id: task._id,
+      result: result,
+      classification: classification,
+      notes: note,
+    };
+    const config = {
+      method: 'POST',
+      data: body
+    }
+    console.log(expandedTask, 'ffffffffffffffffff');
     
-    // const res = await basicAxios(API_ENDPOINTS.UPDATE_TASK, config);
-    // console.log(res);
-    setResult('completed');
+    const res = await basicAxios(API_ENDPOINTS.UPDATE_TASK, config);
+    console.log(res);
+    setResult('');
     setClassification('');
-    setNotes(''); 
+    setNotes('');
     closeTask();
   };
+
 
   return (
     <>
