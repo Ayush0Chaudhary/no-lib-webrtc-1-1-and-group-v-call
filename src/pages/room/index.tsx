@@ -48,6 +48,7 @@ const RoomCallPage = () => {
   const [recordedChunks, setRecordedChunks] = useState([]);
   const [isRecording, setIsRecording] = useState(false);
   const [downloadLink, setDownloadLink] = useState('');
+  const revolveRef = useRef(0);
   // const [myStream, setMyStream] = useState<MediaStream>();
 
 
@@ -77,7 +78,18 @@ const RoomCallPage = () => {
       numCols=2;
   }
     else if(remoteVideoRefs2.current.srcObject != null) {
-        videoIds=['video1','video2','video3'];
+        switch(revolveRef.current%3) {
+          case 0:
+            videoIds=['video1','video2','video3'];
+            break;
+          case 1:
+            videoIds=['video3','video1','video2'];
+            break;
+          case 2:
+            videoIds=['video2','video3','video1'];
+            break;
+        }
+        
         numRows=2;
         numCols=2;
     }
@@ -405,7 +417,9 @@ const RoomCallPage = () => {
     setIsRecording(false);
   };
 
-
+  const handleRevolve = () => {
+    revolveRef.current += 1;
+  };  
 
   return frontendEnabled ? (
     <>
@@ -525,14 +539,16 @@ const RoomCallPage = () => {
             <button onClick={startRecording} disabled={isRecording} className='bg-blue-500 p-2 rounded-md'>Start Recording</button>
         <button onClick={stopRecording} disabled={!isRecording} className='bg-blue-500 p-2 rounded-md m-1'>Stop Recording</button>
         {downloadLink && <a href={downloadLink} download="canvasRecording.webm">Download</a>}
+        <button onClick={handleRevolve} className='bg-blue-500 p-2 rounded-md m-1'>Revolve</button>
           </div>
           <div>
       
       </div>
         
         </div>
-        
+        <div className='vertical-line'></div>
         <div className='task-list'>
+          
           <TaskList />
         </div>
         

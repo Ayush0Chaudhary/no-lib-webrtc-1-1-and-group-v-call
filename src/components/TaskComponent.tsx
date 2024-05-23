@@ -6,9 +6,9 @@ import API_ENDPOINTS from '@/services/apiEndpoints';
 
 const TaskComponent = ({ task, closeTask }) => {
   const [expandedTask, setExpandedTask] = useState(false);
-  const [result, setResult] = useState('');
-  const [classification, setClassification] = useState('');
-  const [note, setNotes] = useState('');
+  const [result, setResult] = useState(task.result);
+  const [classification, setClassification] = useState(task.classification);
+  const [note, setNotes] = useState();
 
 
 
@@ -52,8 +52,8 @@ const TaskComponent = ({ task, closeTask }) => {
     <>
       
         <div className={`task-details active`}>
-          <p className='what-to-do'>What To Do</p>
-          <p>{task.description}</p>
+          <p className='what-to-do'>WHAT TO DO</p>
+          <p className='task-description'>{task.description}</p>
           <p className='what-to-do details'>DETAILS</p>
           <div className='specs'>
             {Object.entries(parseDetails(task.details)).map(([key, value]) => (
@@ -69,9 +69,9 @@ const TaskComponent = ({ task, closeTask }) => {
           </div>
         </div>
       
-      <div style={{ padding: '20px' }} className='notes-container-full'>
+      <div style={{ padding: '10px' }} className='notes-container-full'>
         <hr />
-        <h1 className='font-bold text-3xl mb-2'>Notes</h1>
+        <h1 className='font-bold text-2xl mb-2'>Notes</h1>
         <div style={{ display: 'flex', justifyContent: 'space-between', gap: '3vw' }}>
           <div className='select-container'>
             <p>Result</p>
@@ -100,7 +100,7 @@ const TaskComponent = ({ task, closeTask }) => {
             </select>
           </div>
         </div>
-        <div style={{ marginTop: '20px' }} className='notes-container'>
+        <div style={{ marginTop: '10px' }} className='notes-container'>
           <p>Notes</p>
           <input
             value={note}
@@ -113,9 +113,9 @@ const TaskComponent = ({ task, closeTask }) => {
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <div className='select-container'></div>
           <div className='select-container'>
-            <div className='rounded-button' onClick={updateTask}>
+            <button className='rounded-button' disabled={result=='' || classification==''} onClick={updateTask}>
               NEXT TASK
-            </div>
+            </button>
           </div>
         </div>
       </div>
