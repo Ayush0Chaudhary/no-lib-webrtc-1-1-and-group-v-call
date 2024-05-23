@@ -372,74 +372,6 @@ const RoomCallPage = () => {
     });
     // makePCWithNewUser();
   };
-  const startCall = async () => {
-    const myStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-    if (videoRef.current) {
-      videoRef.current.srcObject = myStream;
-    }
-    socket.emit('start-call', meetingLink);
-
-    socket.on('offer', async (data) => {
-      const parsedJSON = JSON.parse(data);
-      console.log(parsedJSON, 'parsedJson Offer');
-      users.push(parsedJSON.from);
-
-      const pc = new RTCPeerConnection(peerConfiguration);
-      pc.onicecandidate = (event) => {
-        if (event.candidate) {
-          socket.emit(
-            'ice-candidate',
-            JSON.stringify({ candidate: event.candidate, to: parsedJSON.from })
-          );
-        }
-      };
-      pc.ontrack = (event) => {
-        console.log('ontrack', new Date().getTime(), event, event.track);
-        console.log(users);
-
-        const remoteStream = new MediaStream();
-        remoteStream.addTrack(event.track);
-        console.log(users.length);
-        setUsersInMeet([...users]);
-        console.log(users, 'dddddddddddddddddddddddddd');
-
-        if (users.length === 1) {
-          console.log('DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDdd');
-          remoteVideoRefs1.current.srcObject = remoteStream;
-          // console.log('hello');
-          videoRef.current.className = `w-6 h object-cover flex-1 vids`;
-          remoteVideoRefs1.current.className = `w-1/2 h object-cover flex-1 vids`;
-        } else if (users.length === 2) {
-          remoteVideoRefs2.current.srcObject = remoteStream;
-          videoRef.current.className = `w-6 h-1/2 object-cover flex-1 vids`;
-          remoteVideoRefs1.current.className = `w-1/2 h-1/2 object-cover flex-1 vids`;
-          remoteVideoRefs2.current.className = `w-6 h-1/2 object-cover flex-1 vids`;
-          remoteVideoRefs3.current.className = `w-6 h-1/2 object-cover flex-1 vids`;
-        } else if (users.length === 3) {
-          remoteVideoRefs3.current.srcObject = remoteStream;
-        } else if (users.length === 4) {
-          remoteVideoRefs4.current.srcObject = remoteStream;
-        }
-      };
-      // pc.onicecandidate = handleICECandidateEvent;
-      // pc.ontrack = handleTrackEvent
-      // pc.onnegotiationneeded = handleNegotiationNeededEvent;
-      // // pc.onremovetrack = handleRemoveTrackEvent;
-      // pc.oniceconnectionstatechange = handleICEConnectionStateChangeEvent;
-      // pc.onicegatheringstatechange = handleICEGatheringStateChangeEvent;
-      // pc.onsignalingstatechange = handleSignalingStateChangeEvent;
-
-      myStream.getTracks().forEach((track) => pc.addTrack(track, myStream));
-
-      await pc.setRemoteDescription(parsedJSON.offer).then(() => {
-        console.log(Date.now(), '*********Remote Description Set*********', pc);
-        pcMap.set(parsedJSON.from, pc);
-      });
-      const answer = await pc.createAnswer();
-      pc.setLocalDescription(answer);
-      socket.emit('answer', JSON.stringify({ answer: answer, to: parsedJSON.from }));
-    });
-
 
   const startRecording = () => {
     const canvas = canvasRef.current;
@@ -590,16 +522,20 @@ const RoomCallPage = () => {
               ))}
             </div>
             {/* <Label htmlFor='email'>Your email address</Label> */}
+            <button onClick={startRecording} disabled={isRecording} className='bg-blue-500 p-2 rounded-md'>Start Recording</button>
+        <button onClick={stopRecording} disabled={!isRecording} className='bg-blue-500 p-2 rounded-md m-1'>Stop Recording</button>
+        {downloadLink && <a href={downloadLink} download="canvasRecording.webm">Download</a>}
           </div>
           <div>
-        <button onClick={startRecording} disabled={isRecording}>Start Recording</button>
-        <button onClick={stopRecording} disabled={!isRecording}>Stop Recording</button>
-        {downloadLink && <a href={downloadLink} download="canvasRecording.webm">Download</a>}
+      
       </div>
+        
         </div>
+        
         <div className='task-list'>
           <TaskList />
         </div>
+        
       </div>
     </>
   ) : (
