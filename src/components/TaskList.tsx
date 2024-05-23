@@ -62,26 +62,6 @@ const TaskList = () => {
   }, []);
 
   // const filteredTasks = taskData.filter(task => task.status === selectedOption);
-  const updateTask = async () => {
-    const body = {
-      projectName: 'samosa',
-      _id: expandedTask,
-      result: result,
-      classification: classification,
-      notes: note,
-    };
-    const config = {
-      method: 'POST',
-      data: body
-    }
-    console.log(expandedTask, 'ffffffffffffffffff');
-    
-    const res = await basicAxios(API_ENDPOINTS.UPDATE_TASK, config);
-    console.log(res);
-    setResult('');
-    setClassification('');
-    setNotes('');
-  };
 
   const todoTasks = taskData.filter(task => task.result === 'null');
   const CompletedTasks = taskData.filter(task => task.result !== 'null');
@@ -136,73 +116,7 @@ const TaskList = () => {
                 </div>
                 <h3 className='task-title'>{task.title}</h3>
               </div>
-              <div className={`task-details active`}> 
-                <p className='what-to-do'>What To Do</p>
-                <p>{task.description}</p>
-                <p className='what-to-do details'>DETAILS</p>
-                <div className='specs'>
-                    {Object.entries(parseDetails(task.details)).map(([key, value]) => (
-                      <div className='specification'>
-                        <div className="spec-top">
-                          <p>{key}</p>
-                        </div>
-                        <div className="spec-bottom">
-                          <p>{value}</p>
-                        </div>
-                     </div>
-                             ))}
-                </div>
-              </div>
-              <div style={{ padding: '20px' }} className='notes-container-full'>
-              <hr />
-                <h1 className='font-bold text-3xl mb-2'>Notes</h1>
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', gap:'3vw' }}>
-                  <div className='select-container'>
-                    <p>Result</p>
-                    <select
-                      value={result}
-                      onChange={(e) => setResult(e.target.value)}
-                      className='option-selector'
-                    >
-                      <option value='Pass'>Pass</option>
-                      <option value='Fail'>Fail</option>
-                      <option value='Other'>Other</option>
-                    </select>
-                  </div>
-                  <div className='select-container'>
-                    <p>Classification?</p>
-                    <select
-                      value={classification === null ? '' : classification}
-                      onChange={(e) => setClassification(e.target.value)}
-                      className='option-selector'
-                    >
-                      <option value='Bug'>Bug</option>
-                      <option value='Insight'>Insight</option>
-                      <option value='Other'>Other</option>
-                    </select>
-                  </div>
-                </div>
-                <div style={{ marginTop: '20px' }} className='notes-container'>
-                  <p>Notes</p>
-                  <input
-                    value={note}
-                    onChange={(e) => setNotes(e.target.value)}
-                    placeholder='Capture your notes here...'
-                    style={{ width: '34vw' }}
-                    className='notes'
-                  />
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <div className='select-container'></div>
-                  <div className='select-container'>
-                    <div className='rounded-button' onClick={updateTask}>
-                      NEXT TASK
-                    </div>
-                  </div>
-                </div>
-              </div>
-              {/* <TaskComponent task={taskData} updateTask={updateTask} />; */}
+              <TaskComponent task={task}/>
             </>
           ))
       )}

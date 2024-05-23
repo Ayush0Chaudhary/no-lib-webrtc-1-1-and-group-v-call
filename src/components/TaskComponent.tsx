@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { IoIosArrowBack } from 'react-icons/io';
+import './TaskList.css';
 
-const TaskComponent = ({ task, updateTask }) => {
+const TaskComponent = ({ task }) => {
   const [expandedTask, setExpandedTask] = useState(false);
   const [result, setResult] = useState('');
   const [classification, setClassification] = useState('');
@@ -24,15 +25,30 @@ const TaskComponent = ({ task, updateTask }) => {
     return detailsObject;
   }
 
+  const updateTask = async () => {
+    const body = {
+      projectName: 'samosa',
+      _id: expandedTask,
+      result: result,
+      classification: classification,
+      notes: note,
+    };
+    const config = {
+      method: 'POST',
+      data: body
+    }
+    console.log(expandedTask, 'ffffffffffffffffff');
+    
+    const res = await basicAxios(API_ENDPOINTS.UPDATE_TASK, config);
+    console.log(res);
+    setResult('');
+    setClassification('');
+    setNotes('');
+  };
+
   return (
     <>
-      <div className='task-header-unexpanded' onClick={handleToggleDetails}>
-        <div className='dropdown-arrow'>
-          <IoIosArrowBack fontSize='15px' />
-        </div>
-        <h3 className='task-title'>{task.title}</h3>
-      </div>
-      {expandedTask && (
+      
         <div className={`task-details active`}>
           <p className='what-to-do'>What To Do</p>
           <p>{task.description}</p>
@@ -50,7 +66,7 @@ const TaskComponent = ({ task, updateTask }) => {
             ))}
           </div>
         </div>
-      )}
+      
       <div style={{ padding: '20px' }} className='notes-container-full'>
         <hr />
         <h1 className='font-bold text-3xl mb-2'>Notes</h1>
