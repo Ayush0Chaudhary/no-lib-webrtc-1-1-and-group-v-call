@@ -229,12 +229,6 @@ const RoomCallPage = () => {
               Generate my Random ID
             </button>
           </div>
-          {/* <div className="flex justify-center mt-4">
-        <button onClick={testSocket2} className='bg-red-600 text-white px-4 py-2 rounded'>
-          Test Socket 2 Emit
-        </button>
-      </div> */}
-          {/* Meeting link text field */}
           <div className='mt-4'>
             <label htmlFor='meetingLink' className='block text-sm font-medium'>
               Enter Other Person's Socket.io ID and your ID is : {sioID}
