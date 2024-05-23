@@ -63,6 +63,10 @@
     cursor: pointer;
   }
   
+  .task-title{
+    font-size:2rem;
+    font-weight: 800;
+  }
   
   .task-header h3 {
     margin: 0;
@@ -137,7 +141,6 @@
       font-weight: 600;
     }
   }
-
   .rounded-button {
     background-color: blue;
     color: white;
@@ -148,3 +151,59 @@
     cursor: pointer;
   }
   
+  .what-to-do{
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+    color: #7e7e7e;
+    font-weight: 600;
+  }
+  
+  .heading-notes{
+    font-weight: 800;
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+  }
+
+  .details{
+    margin-top:2vh;
+  }
+
+  .specs{
+    display: flex;
+    gap:5vw;
+  }
+
+  .spec-top{
+    font-weight: 700;
+    font-size: 0.8rem;
+  }
+
+  .spec-bottom{
+    font-weight: 700;
+    color: #525252;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    margin-top:2px;
+    p{
+      background-color: #e6e6e6;
+      border-radius: 5px;
+      padding: 5px;
+      font-size: 0.8rem;
+    }
+  }
+  
+
+  @media only screen and (min-height: 800px){
+    .notes-container-full{
+      position: absolute;
+      bottom: 2vh;
+    }
+  }
+  @media only screen and (max-height: 800px){
+    .notes-container-full{
+      /* margin-top:5vh; */
+      position: absolute;
+      bottom: 2vh;
+    }
+  }
