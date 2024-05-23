@@ -2,8 +2,16 @@
 import { useRef, useState, useEffect } from 'react';
 import io from 'socket.io-client';
 import TaskList from '@/components/TaskList';
-import "./index.scss";
-import {fabric} from 'fabric';
+import './index.scss';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+
 
 const peerConfiguration = {
   iceServers: [
@@ -35,19 +43,15 @@ const RoomCallPage = () => {
   const [src3, setsrc3] = useState('');
   const users: string[] = [];
   const pcMap = new Map<string, RTCPeerConnection>();
+
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [recordedChunks, setRecordedChunks] = useState([]);
   const [isRecording, setIsRecording] = useState(false);
   const [downloadLink, setDownloadLink] = useState('');
   // const [myStream, setMyStream] = useState<MediaStream>();
 
-  // useEffect(() => {
-  //   console.log(users);
-  //   if (videoRef.current) {
-  //     console.log('idhar useffect mei control pahuch gya hai');
-  //     videoRef.current.className = `w-full h-full object-cover flex-1 ${users.length > 1 ? 'half-width' : ''}`;
-  //   }
-  // }, [videoRef]);
+
+  const [activeSources, setActiveSources] = useState(['My Camera', 'My Audio']);
 
   
 
@@ -203,6 +207,7 @@ const RoomCallPage = () => {
           const pc = new RTCPeerConnection(peerConfiguration);
           users.push(parsedJson.userIds[i]);
           pc.ontrack = (event) => {
+
             // console.log(event);
             // console.log((i+1),'ontrackkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk');
             // console.log(pc, 'here', Date.now());
@@ -222,8 +227,8 @@ const RoomCallPage = () => {
               remoteVideoRefs3.current.play();
             } else if ((i+1) === 4) {
               remoteVideoRefs4.current.srcObject = remoteStream;
+
             }
-            
           };
           pc.onicecandidate = (event) => {
             if (event.candidate) {
@@ -283,13 +288,13 @@ const RoomCallPage = () => {
         }
       };
       pc.ontrack = (event) => {
-        console.log('ontrack', new Date().getTime(), event,event.track);
+        console.log('ontrack', new Date().getTime(), event, event.track);
         console.log(users);
 
         const remoteStream = new MediaStream();
         remoteStream.addTrack(event.track);
         console.log(users.length);
-        
+
         if (users.length === 1) {
           console.log('DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDdd');
           setsrc1(users[1]);
@@ -304,8 +309,10 @@ const RoomCallPage = () => {
             // }, 100);  // Start drawing video to canvas here
           
           // console.log('hello');
+
           videoRef.current.className = `w-1/2 h object-cover flex-1 vids`;
           remoteVideoRefs1.current.className = `w-1/2 h object-cover flex-1 vids`; 
+
         } else if (users.length === 2) {
           setsrc2(users[2]);
 
@@ -313,9 +320,9 @@ const RoomCallPage = () => {
           remoteVideoRefs2.current.play();
           videoRef.current.className = `w-1/2 h-1/2 object-cover flex-1 vids`;
           remoteVideoRefs1.current.className = `w-1/2 h-1/2 object-cover flex-1 vids`;
+
           remoteVideoRefs2.current.className = `w-1/2 h-1/2 object-cover flex-1 vids`; 
           remoteVideoRefs3.current.className = `w-1/2 h-1/2 object-cover flex-1 vids`; 
-          
         } else if (users.length === 3) {
           setsrc3(users[3]);
 
@@ -323,10 +330,9 @@ const RoomCallPage = () => {
           remoteVideoRefs3.current.play();
         } else if (users.length === 4) {
           setsrc4(users[4]);
-          
+
           remoteVideoRefs4.current.srcObject = remoteStream;
         }
-        
       };
       // pc.onicecandidate = handleICECandidateEvent;
       // pc.ontrack = handleTrackEvent
@@ -347,7 +353,6 @@ const RoomCallPage = () => {
       socket.emit('answer', JSON.stringify({ answer: answer, to: parsedJSON.from }));
     });
 
-
     socket.on('ice-candidate', async (data) => {
       const parsedJSON = JSON.parse(data);
       const pc = pcMap.get(parsedJSON.from);
@@ -367,6 +372,73 @@ const RoomCallPage = () => {
     });
     // makePCWithNewUser();
   };
+  const startCall = async () => {
+    const myStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    if (videoRef.current) {
+      videoRef.current.srcObject = myStream;
+    }
+    socket.emit('start-call', meetingLink);
+
+    socket.on('offer', async (data) => {
+      const parsedJSON = JSON.parse(data);
+      console.log(parsedJSON, 'parsedJson Offer');
+      users.push(parsedJSON.from);
+
+      const pc = new RTCPeerConnection(peerConfiguration);
+      pc.onicecandidate = (event) => {
+        if (event.candidate) {
+          socket.emit(
+            'ice-candidate',
+            JSON.stringify({ candidate: event.candidate, to: parsedJSON.from })
+          );
+        }
+      };
+      pc.ontrack = (event) => {
+        console.log('ontrack', new Date().getTime(), event, event.track);
+        console.log(users);
+
+        const remoteStream = new MediaStream();
+        remoteStream.addTrack(event.track);
+        console.log(users.length);
+        setUsersInMeet([...users]);
+        console.log(users, 'dddddddddddddddddddddddddd');
+
+        if (users.length === 1) {
+          console.log('DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDdd');
+          remoteVideoRefs1.current.srcObject = remoteStream;
+          // console.log('hello');
+          videoRef.current.className = `w-6 h object-cover flex-1 vids`;
+          remoteVideoRefs1.current.className = `w-1/2 h object-cover flex-1 vids`;
+        } else if (users.length === 2) {
+          remoteVideoRefs2.current.srcObject = remoteStream;
+          videoRef.current.className = `w-6 h-1/2 object-cover flex-1 vids`;
+          remoteVideoRefs1.current.className = `w-1/2 h-1/2 object-cover flex-1 vids`;
+          remoteVideoRefs2.current.className = `w-6 h-1/2 object-cover flex-1 vids`;
+          remoteVideoRefs3.current.className = `w-6 h-1/2 object-cover flex-1 vids`;
+        } else if (users.length === 3) {
+          remoteVideoRefs3.current.srcObject = remoteStream;
+        } else if (users.length === 4) {
+          remoteVideoRefs4.current.srcObject = remoteStream;
+        }
+      };
+      // pc.onicecandidate = handleICECandidateEvent;
+      // pc.ontrack = handleTrackEvent
+      // pc.onnegotiationneeded = handleNegotiationNeededEvent;
+      // // pc.onremovetrack = handleRemoveTrackEvent;
+      // pc.oniceconnectionstatechange = handleICEConnectionStateChangeEvent;
+      // pc.onicegatheringstatechange = handleICEGatheringStateChangeEvent;
+      // pc.onsignalingstatechange = handleSignalingStateChangeEvent;
+
+      myStream.getTracks().forEach((track) => pc.addTrack(track, myStream));
+
+      await pc.setRemoteDescription(parsedJSON.offer).then(() => {
+        console.log(Date.now(), '*********Remote Description Set*********', pc);
+        pcMap.set(parsedJSON.from, pc);
+      });
+      const answer = await pc.createAnswer();
+      pc.setLocalDescription(answer);
+      socket.emit('answer', JSON.stringify({ answer: answer, to: parsedJSON.from }));
+    });
 
 
   const startRecording = () => {
@@ -403,12 +475,14 @@ const RoomCallPage = () => {
 
 
 
-  return frontendEnabled  ? (
+  return frontendEnabled ? (
     <>
-    <h1
-    className='font-bold text-3xl ml-20'>Google Maps Preview (Moderated)</h1>
+      <h1 className='font-bold text-3xl ml-20' >
+        Google Maps Preview (Moderated)
+      </h1>
       <div className='totalflyawaycont'>
         <div className='bg-white text-black min-h-screen flex justify-start items-center mainflyawaycont ml-20'>
+
         {/* <Navbar /> */}
         <div className='flex flex-col items-center'>
           {/* <Separator /> */}
@@ -453,6 +527,7 @@ const RoomCallPage = () => {
           
           </div>
           {/* <div className='mt-4'>
+
             {usersInMeet.map((user, index) => (
               <div key={index} className='font-bold text-xl mb-2'>
                 {user}
@@ -460,30 +535,61 @@ const RoomCallPage = () => {
             ))}
           </div> */}
 
-      
-          <div className="task-panel-heading mt-10">
-            <p onClick={() => console.log(usersInMeet)}>Tasks Panel</p>
-          <div className='Tasks-Panel'>
-          <div className='m-2'>
-            <label htmlFor='meetingLink' className='block text-sm font-medium'>
-              Enter Meeting Link:
-            </label>
-            <input
-              id='meetingLink'
-              name='meetingLink'
-              type='text'
-              value={meetingLink}
-              onChange={(e) => setMeetingLink(e.target.value)}
-              className='mt-1 p-2 w-full rounded border border-gray-600 text-black meet_link'
-            />
-          </div>
-          <button onClick={joinCall} className='bg-blue-800 m-2 text-white px-4 mr-2 rounded'>
-            Join Call
-          </button>
-          <button onClick={startCall} className='bg-black text-white px-4 py-2 mr-2 m-2 rounded'>
-            Start Call 
-          </button>
-          </div>
+            <div className='task-panel-heading mt-10'>
+              <p>Tasks Panel</p>
+              <div className='Tasks-Panel'>
+                <div className='m-2'>
+                  <label htmlFor='meetingLink' className='block text-sm font-medium'>
+                    Enter Meeting Link:
+                  </label>
+                  <input
+                    id='meetingLink'
+                    name='meetingLink'
+                    type='text'
+                    value={meetingLink}
+                    onChange={(e) => setMeetingLink(e.target.value)}
+                    className='mt-1 p-2 w-full rounded border border-gray-600 text-black meet_link'
+                  />
+                </div>
+                <button onClick={joinCall} className='bg-blue-800 m-2 text-white px-4 mr-2 rounded'>
+                  Join Call
+                </button>
+                <button
+                  onClick={startCall}
+                  className='bg-black text-white px-4 py-2 mr-2 m-2 rounded'
+                >
+                  Start Call
+                </button>
+              </div>
+            </div>
+
+            <DropdownMenu>
+              <div
+                className='bg-blue-400 m-3 p-2 rounded-sm'
+                onClick={() => console.log('ggggggggggggggggggggg')}
+              >
+                <DropdownMenuTrigger>Add Sources</DropdownMenuTrigger>
+              </div>
+              <DropdownMenuContent>
+                <DropdownMenuLabel>Available Sources</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {usersInMeet.map((user, index) => (
+                  <DropdownMenuItem onClick={() => setActiveSources([...activeSources, user.substring(0,5)])} key={index}>
+                    {user}
+                  </DropdownMenuItem>
+                ))}
+
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+              {activeSources.map((item, index) => (
+                <div key={index} className='text-black p-4 rounded shadow'>
+                  {item}
+                </div>
+              ))}
+            </div>
+            {/* <Label htmlFor='email'>Your email address</Label> */}
           </div>
           <div>
         <button onClick={startRecording} disabled={isRecording}>Start Recording</button>
@@ -491,13 +597,14 @@ const RoomCallPage = () => {
         {downloadLink && <a href={downloadLink} download="canvasRecording.webm">Download</a>}
       </div>
         </div>
-        </div>
-        <div className="task-list">
-        <TaskList/>
+        <div className='task-list'>
+          <TaskList />
         </div>
       </div>
     </>
-  ): <p>Your are sharing your screen</p>;
-}; 
+  ) : (
+    <p>Your are sharing your screen</p>
+  );
+};
 
 export default RoomCallPage;
