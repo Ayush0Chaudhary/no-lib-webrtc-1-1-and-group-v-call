@@ -32,9 +32,6 @@ const RoomCallPage = () => {
   const remoteVideoRefs2 = useRef(null);
   const remoteVideoRefs3 = useRef(null);
   const remoteVideoRefs4 = useRef(null);
-  const [s1, setS1] = useState(true);
-  const [s2, setS2] = useState(true);
-  const [s3, setS3] = useState(true);
 
   const [frontendEnabled, setFrontedEnabled] = useState(true);
   const [src1, setsrc1] = useState('');
@@ -43,7 +40,7 @@ const RoomCallPage = () => {
   const users: string[] = [];
   const pcMap = new Map<string, RTCPeerConnection>();
 
-  const [activeSources, setActiveSources] = useState([]);
+  const [activeSources, setActiveSources] = useState(['My Camera', 'My Audio']);
 
   const joinCall = async () => {
     const myStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
@@ -73,10 +70,8 @@ const RoomCallPage = () => {
             const remoteStream = new MediaStream();
             remoteStream.addTrack(event.track);
             if (i + 1 === 1) {
-              console.log('DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDdd');
-
               remoteVideoRefs1.current.srcObject = remoteStream;
-              // console.log('hello');
+              console.log('hello');
               videoRef.current.className = `w-6 h object-cover flex-1 vids`;
               remoteVideoRefs1.current.className = `w-1/2 h object-cover flex-1 vids`;
             } else if (i + 1 === 2) {
@@ -86,9 +81,9 @@ const RoomCallPage = () => {
               remoteVideoRefs2.current.className = `w-6 h-1/2 object-cover flex-1 vids`;
               remoteVideoRefs3.current.className = `w-6 h-1/2 object-cover flex-1 vids`;
             } else if (i + 1 === 3) {
-              remoteVideoRefs3.current.srcObject = remoteStream;
+              // remoteVideoRefs3.current.srcObject = remoteStream;
             } else if (i + 1 === 4) {
-              remoteVideoRefs4.current.srcObject = remoteStream;
+              // remoteVideoRefs4.current.srcObject = remoteStream;
             }
           };
           pc.onicecandidate = (event) => {
@@ -219,7 +214,6 @@ const RoomCallPage = () => {
     });
     // makePCWithNewUser();
   };
-
   const startCall = async () => {
     const myStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
     if (videoRef.current) {
@@ -253,7 +247,6 @@ const RoomCallPage = () => {
 
         if (users.length === 1) {
           console.log('DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDdd');
-
           remoteVideoRefs1.current.srcObject = remoteStream;
           // console.log('hello');
           videoRef.current.className = `w-6 h object-cover flex-1 vids`;
@@ -310,7 +303,9 @@ const RoomCallPage = () => {
 
   return frontendEnabled ? (
     <>
-      <h1 className='font-bold text-3xl ml-20'>Google Maps Preview (Moderated)</h1>
+      <h1 className='font-bold text-3xl ml-20' >
+        Google Maps Preview (Moderated)
+      </h1>
       <div className='totalflyawaycont'>
         <div className='bg-white text-black min-h-screen flex justify-start items-center mainflyawaycont ml-20'>
           {/* <Navbar /> */}
@@ -318,33 +313,31 @@ const RoomCallPage = () => {
             {/* <Separator /> */}
             <div className='all-vid '>
               <div className='vid-1-2'>
-                {s1 ? (
-                  <video
-                    ref={videoRef}
-                    className={`w-full h-full object-cover flex-1 vids`}
-                    autoPlay
-                    muted
-                  ></video>
-                ) : null}
-
-                {s2 ? (
-                  <video
-                    ref={remoteVideoRefs1}
-                    className='w-0 h-0 object-cover flex-1 vids'
-                    autoPlay
-                    // muted
-                  ></video>
-                ) : null}
+                
+                <video
+                  ref={videoRef}
+                  className={`w-full h-full object-cover flex-1 vids`}
+                  autoPlay
+                  muted
+                ></video>
+                
+                <video
+                  ref={remoteVideoRefs1}
+                  className='w-0 h-0 object-cover flex-1 vids'
+                  autoPlay
+                  // muted
+                ></video>
+                
               </div>
               <div className='vid-3-4'>
-                {s3 ? (
-                  <video
-                    ref={remoteVideoRefs2}
-                    className='w-0 h-0 object-cover flex-1 vids'
-                    autoPlay
-                    // muted
-                  ></video>
-                ) : null}
+                
+                <video
+                  ref={remoteVideoRefs2}
+                  className='w-0 h-0 object-cover flex-1 vids'
+                  autoPlay
+                  // muted
+                ></video>
+                
                 <video
                   ref={remoteVideoRefs3}
                   className='w-0 h-0 object-cover flex-1 vids'
@@ -368,7 +361,7 @@ const RoomCallPage = () => {
           </div> */}
 
             <div className='task-panel-heading mt-10'>
-              <p onClick={() => console.log(usersInMeet)}>Tasks Panel</p>
+              <p>Tasks Panel</p>
               <div className='Tasks-Panel'>
                 <div className='m-2'>
                   <label htmlFor='meetingLink' className='block text-sm font-medium'>
@@ -396,24 +389,32 @@ const RoomCallPage = () => {
             </div>
 
             <DropdownMenu>
-              <div className='bg-blue-400 m-3 p-2 rounded-sm' onClick={() => console.log('ggggggggggggggggggggg')}>
+              <div
+                className='bg-blue-400 m-3 p-2 rounded-sm'
+                onClick={() => console.log('ggggggggggggggggggggg')}
+              >
                 <DropdownMenuTrigger>Add Sources</DropdownMenuTrigger>
               </div>
               <DropdownMenuContent>
                 <DropdownMenuLabel>Available Sources</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {usersInMeet.map((user, index) => (
-                  <DropdownMenuItem onClick={() => console.log(usersInMeet, 'dfffffffffffff')} key={index}>{user}</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setActiveSources([...activeSources, user.substring(0,5)])} key={index}>
+                    {user}
+                  </DropdownMenuItem>
                 ))}
-                {/* <DropdownMenuItem onClick={() => console.log(usersInMeet, 'dfffffffffffff')}>
-                  Profile
-                </DropdownMenuItem> */}
 
-                {/* <DropdownMenuItem>Billing</DropdownMenuItem>
-                <DropdownMenuItem>Team</DropdownMenuItem>
-                <DropdownMenuItem>Subscription</DropdownMenuItem> */}
               </DropdownMenuContent>
             </DropdownMenu>
+
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+              {activeSources.map((item, index) => (
+                <div key={index} className='text-black p-4 rounded shadow'>
+                  {item}
+                </div>
+              ))}
+            </div>
+            {/* <Label htmlFor='email'>Your email address</Label> */}
           </div>
         </div>
         <div className='task-list'>
