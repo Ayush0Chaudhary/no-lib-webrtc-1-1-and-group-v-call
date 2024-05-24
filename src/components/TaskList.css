@@ -3,7 +3,7 @@
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    margin-top:8vh;
+    margin-top:6vh;
     .heading{
       display: flex;
       align-items: center;

@@ -3,11 +3,10 @@
     border: 0.5px solid #ccc;
     .mainflyawaycont{
         .all-vid{
-
+            display: flex;
             border: 1px solid #ccc;
-            border-radius: 10px; 
-            min-width:30vw;
-            min-height:30vh;
+            min-width:32vw;
+            min-height:40vh;
 
             .vid-1-2{
                 display: flex;
@@ -30,6 +29,11 @@
             flex-direction: row;
         }
 
+        .more-controls{
+            display: flex;
+            // flex-direction: column;
+        }
+
         .task-panel-heading{
             border: 0.5px solid #ccc;
             min-width: 30vw;
@@ -48,11 +52,55 @@
     }
     .vertical-line{
         border-left: 1px solid #ccc;
-        height: 83vh;
+        height: 100vh;
         margin-left: 5vw;
         width:0px;
-        margin-left:17vw;
         margin-right: 2vw;
-        margin-top:10vh;
+        // margin-top:8vh;
       }   
+
+      .video-total{
+        // padding-right:10vw;
+      }
+
+      .video-total-no-source{
+        padding-right:10vw;
+      }
+
+      .video-total-with-source{
+        padding-right:5vw;
+      }
+
+      .video-container{
+        border: 1px solid #ccc;
+        margin-top:6vh;
+        border-radius: 5px;
+        .recording-panel{
+            padding: 0.5rem;
+            .recording-content{
+                .recording-content-1{
+                    font-size: 1.2rem;
+                    font-weight: 700;
+                    font-family: 'Montserrat', sans-serif;
+                }
+                .recording-content-2{
+                    font-size: 1rem;
+                    font-weight: 400;
+                    color:#919191;
+                    font-family: 'Work Sans', sans-serif;
+                }
+            }
+            .rec-timer{
+                font-size: 1.5rem;
+                font-weight: 700;
+                font-family: 'Montserrat', sans-serif;
+            }
+            .rec-timer-disabled{
+                color: #ccc;
+            }
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+      }
 }
