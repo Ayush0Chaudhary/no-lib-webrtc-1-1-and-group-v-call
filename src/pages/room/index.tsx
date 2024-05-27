@@ -86,7 +86,7 @@ const RoomCallPage = () => {
   };
 
   const drawToCanvas = (videoIds) => {
-    const canvas = document.getElementById('canvas');
+    const canvas =  canvasRef.current;
     if (!canvas) return;
 
     const context = canvas.getContext('2d');
@@ -525,9 +525,10 @@ const RoomCallPage = () => {
             >
               Stop Recording
             </button>
-            <button disabled={downloadLink!=undefined} className='bg-blue-500 p-2 rounded-md mr-2'>
+            {/* <button disabled={downloadLink!=undefined} className='bg-blue-500 p-2 rounded-md mr-2'>
                {downloadLink ? <a href="" download='canvasRecording.webm'>Download</a> : <div>Download</div>}
-            </button>
+            </button> */}
+            {downloadLink && <a href={downloadLink} download="canvasRecording.webm" className='bg-blue-500 p-2 rounded-md mr-2 flex items-center'>Download</a>}
             <button onClick={handleRevolve} className='bg-blue-500 p-2 rounded-md'>
               Revolve
             </button>
