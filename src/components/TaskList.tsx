@@ -67,21 +67,24 @@ const TaskList = () => {
   const tasksToDisplay = todoActive === 'todo' ? todoTasks : CompletedTasks;
   return (
     <div className='task-list-container'>
-      <div className='heading' onClick={test}>Tasks</div>
+      <div className='heading' onClick={test}>
+        <p>Tasks</p>
+        <div className="fracComp">{taskData.filter((t) => t.result !== undefined).length} / {taskData.length} Completed</div>
+      </div>
       {expandedTask === null ? (
         <div >
           <div className='task-toggle'>
         <div
-          className={`task-toggle-option ${todoActive === 'todo' && 'active'}`}
+          className={`task-toggle-option todotab ${todoActive === 'todo' && 'active'}`}
           onClick={() => handleOptionChange('todo')}
         >
-          <p>To Do</p>
+          <p>TO DO</p>
         </div>
         <div
-          className={`task-toggle-option ${todoActive === 'completed' && 'active'}`}
+          className={`task-toggle-option completedtab ${todoActive === 'completed' && 'active'}`}
           onClick={() => handleOptionChange('completed')}
         >
-         <p>Completed</p>
+         <p>COMPLETED</p>
         </div>
         </div>
         <div className='task-list'>
